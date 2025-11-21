@@ -1,0 +1,228 @@
+import { Calendar } from "@/components/ui/calendar";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { Package, ShoppingCart, Users, TrendingUp } from "lucide-react";
+import { useState } from "react";
+
+const Dashboard = () => {
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
+
+  const { data: orders } = useQuery({
+    queryKey: ["orders"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("orders")
+        .select("*, customers(name), order_items(quantity, subtotal)")
+        .order("order_date", { ascending: false });
+      
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const { data: products } = useQuery({
+    queryKey: ["products"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("products")
+        .select("*");
+      
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const { data: customers } = useQuery({
+    queryKey: ["customers"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("customers")
+        .select("*");
+      
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const totalOrders = orders?.length || 0;
+  const totalProducts = products?.length || 0;
+  const totalCustomers = customers?.length || 0;
+  const totalRevenue = orders?.reduce((sum, order) => sum + (Number(order.total_amount) || 0), 0) || 0;
+
+  const upcomingPickups = orders
+    ?.filter(order => new Date(order.pickup_date) >= new Date())
+    ?.sort((a, b) => new Date(a.pickup_date).getTime() - new Date(b.pickup_date).getTime())
+    ?.slice(0, 5);
+
+  const recentOrders = orders?.slice(0, 5);
+
+  return (
+    <div className="space-y-8 animate-in fade-in duration-500">
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <Card className="border-border/50 shadow-elegant hover:shadow-gold transition-all duration-300">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Total de Pedidos
+            </CardTitle>
+            <ShoppingCart className="w-5 h-5 text-primary" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-primary">{totalOrders}</div>
+            <p className="text-xs text-muted-foreground mt-1">
+              Pedidos cadastrados
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card className="border-border/50 shadow-elegant hover:shadow-gold transition-all duration-300">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Produtos
+            </CardTitle>
+            <Package className="w-5 h-5 text-secondary" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-secondary">{totalProducts}</div>
+            <p className="text-xs text-muted-foreground mt-1">
+              Produtos disponíveis
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card className="border-border/50 shadow-elegant hover:shadow-gold transition-all duration-300">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Clientes
+            </CardTitle>
+            <Users className="w-5 h-5 text-accent" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-accent">{totalCustomers}</div>
+            <p className="text-xs text-muted-foreground mt-1">
+              Clientes cadastrados
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card className="border-border/50 shadow-elegant hover:shadow-gold transition-all duration-300">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Receita Total
+            </CardTitle>
+            <TrendingUp className="w-5 h-5 text-primary" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-primary">
+              R$ {totalRevenue.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              Valor total dos pedidos
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Calendar and Pickups */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <Card className="lg:col-span-2 border-border/50 shadow-elegant">
+          <CardHeader>
+            <CardTitle className="text-xl">Calendário de Pedidos</CardTitle>
+            <CardDescription>Visualize os dias de retirada dos pedidos</CardDescription>
+          </CardHeader>
+          <CardContent className="flex justify-center">
+            <Calendar
+              mode="single"
+              selected={selectedDate}
+              onSelect={setSelectedDate}
+              locale={ptBR}
+              className="rounded-lg border border-border pointer-events-auto"
+            />
+          </CardContent>
+        </Card>
+
+        <Card className="border-border/50 shadow-elegant">
+          <CardHeader>
+            <CardTitle className="text-xl">Próximas Retiradas</CardTitle>
+            <CardDescription>Pedidos com retirada agendada</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {upcomingPickups?.map((order) => (
+                <div key={order.id} className="flex items-center justify-between p-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors">
+                  <div className="space-y-1">
+                    <p className="font-medium text-sm">{order.customers?.name}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {format(new Date(order.pickup_date), "dd 'de' MMMM", { locale: ptBR })}
+                    </p>
+                  </div>
+                  <Badge variant={
+                    order.status === "pending" ? "secondary" :
+                    order.status === "confirmed" ? "default" :
+                    order.status === "ready" ? "default" : "outline"
+                  }>
+                    {order.status === "pending" ? "Pendente" :
+                     order.status === "confirmed" ? "Confirmado" :
+                     order.status === "ready" ? "Pronto" : order.status}
+                  </Badge>
+                </div>
+              ))}
+              {(!upcomingPickups || upcomingPickups.length === 0) && (
+                <p className="text-sm text-muted-foreground text-center py-8">
+                  Nenhuma retirada agendada
+                </p>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Recent Orders */}
+      <Card className="border-border/50 shadow-elegant">
+        <CardHeader>
+          <CardTitle className="text-xl">Pedidos Recentes</CardTitle>
+          <CardDescription>Últimos pedidos cadastrados no sistema</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            {recentOrders?.map((order) => (
+              <div key={order.id} className="flex items-center justify-between p-4 bg-muted rounded-lg hover:bg-muted/80 transition-colors">
+                <div className="space-y-1">
+                  <p className="font-medium">{order.customers?.name}</p>
+                  <p className="text-sm text-muted-foreground">
+                    Pedido: {format(new Date(order.order_date), "dd/MM/yyyy")} • 
+                    Retirada: {format(new Date(order.pickup_date), "dd/MM/yyyy")}
+                  </p>
+                </div>
+                <div className="text-right space-y-1">
+                  <p className="font-bold text-primary">
+                    R$ {Number(order.total_amount || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                  </p>
+                  <Badge variant={
+                    order.status === "pending" ? "secondary" :
+                    order.status === "confirmed" ? "default" : "outline"
+                  }>
+                    {order.status === "pending" ? "Pendente" :
+                     order.status === "confirmed" ? "Confirmado" :
+                     order.status === "ready" ? "Pronto" : order.status}
+                  </Badge>
+                </div>
+              </div>
+            ))}
+            {(!recentOrders || recentOrders.length === 0) && (
+              <p className="text-sm text-muted-foreground text-center py-8">
+                Nenhum pedido cadastrado ainda
+              </p>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+export default Dashboard;
