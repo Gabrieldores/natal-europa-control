@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { Home, Package, ShoppingCart, FileText } from "lucide-react";
+import { Home, Package, Users, ShoppingCart, FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
@@ -8,6 +8,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   const navItems = [
     { path: "/", icon: Home, label: "Dashboard" },
     { path: "/products", icon: Package, label: "Produtos" },
+    { path: "/customers", icon: Users, label: "Clientes" },
     { path: "/orders", icon: ShoppingCart, label: "Pedidos" },
     { path: "/reports", icon: FileText, label: "Relatórios" },
   ];
