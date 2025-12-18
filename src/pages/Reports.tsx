@@ -26,61 +26,62 @@ const Reports = () => {
   const confirmedOrders = orders?.filter(o => o.status === "confirmed").length || 0;
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500">
+    <div className="space-y-4 lg:space-y-6 animate-in fade-in duration-500">
       <div>
-        <h1 className="text-3xl font-bold text-foreground">Relatórios</h1>
-        <p className="text-muted-foreground mt-1">Visualização completa dos pedidos</p>
+        <h1 className="text-2xl lg:text-3xl font-bold text-foreground">Relatórios</h1>
+        <p className="text-muted-foreground mt-1 text-sm lg:text-base">Visualização completa dos pedidos</p>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
         <Card className="border-border/50 shadow-elegant">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total de Pedidos</CardTitle>
+          <CardHeader className="pb-2 lg:pb-3 p-3 lg:p-6">
+            <CardTitle className="text-xs lg:text-sm font-medium text-muted-foreground">Total de Pedidos</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-primary">{totalOrders}</div>
+          <CardContent className="p-3 lg:p-6 pt-0">
+            <div className="text-xl lg:text-2xl font-bold text-primary">{totalOrders}</div>
           </CardContent>
         </Card>
 
         <Card className="border-border/50 shadow-elegant">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Receita Total</CardTitle>
+          <CardHeader className="pb-2 lg:pb-3 p-3 lg:p-6">
+            <CardTitle className="text-xs lg:text-sm font-medium text-muted-foreground">Receita Total</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-primary">
+          <CardContent className="p-3 lg:p-6 pt-0">
+            <div className="text-lg lg:text-2xl font-bold text-primary">
               R$ {totalRevenue.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
             </div>
           </CardContent>
         </Card>
 
         <Card className="border-border/50 shadow-elegant">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Pendentes</CardTitle>
+          <CardHeader className="pb-2 lg:pb-3 p-3 lg:p-6">
+            <CardTitle className="text-xs lg:text-sm font-medium text-muted-foreground">Pendentes</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-accent">{pendingOrders}</div>
+          <CardContent className="p-3 lg:p-6 pt-0">
+            <div className="text-xl lg:text-2xl font-bold text-accent">{pendingOrders}</div>
           </CardContent>
         </Card>
 
         <Card className="border-border/50 shadow-elegant">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Confirmados</CardTitle>
+          <CardHeader className="pb-2 lg:pb-3 p-3 lg:p-6">
+            <CardTitle className="text-xs lg:text-sm font-medium text-muted-foreground">Confirmados</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-secondary">{confirmedOrders}</div>
+          <CardContent className="p-3 lg:p-6 pt-0">
+            <div className="text-xl lg:text-2xl font-bold text-secondary">{confirmedOrders}</div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Orders Table */}
+      {/* Orders - Desktop Table / Mobile Cards */}
       <Card className="border-border/50 shadow-elegant">
         <CardHeader>
-          <CardTitle>Todos os Pedidos</CardTitle>
-          <CardDescription>Lista completa de pedidos cadastrados</CardDescription>
+          <CardTitle className="text-lg lg:text-xl">Todos os Pedidos</CardTitle>
+          <CardDescription className="text-sm">Lista completa de pedidos cadastrados</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="overflow-x-auto">
+          {/* Desktop Table */}
+          <div className="hidden lg:block overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -128,6 +129,49 @@ const Reports = () => {
               </TableBody>
             </Table>
           </div>
+
+          {/* Mobile Cards */}
+          <div className="lg:hidden space-y-3">
+            {orders?.map((order) => (
+              <div key={order.id} className="p-4 bg-muted rounded-lg space-y-3">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <p className="font-medium">{order.customers?.name}</p>
+                    {order.customers?.phone && (
+                      <p className="text-sm text-muted-foreground">{order.customers?.phone}</p>
+                    )}
+                  </div>
+                  <Badge variant={
+                    order.status === "pending" ? "secondary" :
+                    order.status === "confirmed" ? "default" :
+                    order.status === "ready" ? "default" : "outline"
+                  }>
+                    {order.status === "pending" ? "Pendente" :
+                     order.status === "confirmed" ? "Confirmado" :
+                     order.status === "ready" ? "Pronto" : "Concluído"}
+                  </Badge>
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  <p>Pedido: {format(new Date(order.order_date), "dd/MM/yyyy")}</p>
+                  <p>Retirada: {format(new Date(order.pickup_date), "dd/MM/yyyy")}</p>
+                </div>
+                <div className="space-y-1 text-sm">
+                  {order.order_items?.map((item: any, idx: number) => (
+                    <div key={idx} className="text-muted-foreground">
+                      {item.products?.name} ({item.quantity} {item.products?.unit})
+                    </div>
+                  ))}
+                </div>
+                <div className="pt-2 border-t border-border flex justify-between">
+                  <span className="font-medium">Total</span>
+                  <span className="font-bold text-primary">
+                    R$ {Number(order.total_amount || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+
           {(!orders || orders.length === 0) && (
             <div className="text-center py-12">
               <p className="text-muted-foreground">Nenhum pedido cadastrado ainda</p>
