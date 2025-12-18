@@ -61,66 +61,66 @@ const Dashboard = () => {
   const recentOrders = orders?.slice(0, 5);
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
+    <div className="space-y-4 lg:space-y-8 animate-in fade-in duration-500">
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-6">
         <Card className="border-border/50 shadow-elegant hover:shadow-gold transition-all duration-300">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 p-3 lg:p-6">
+            <CardTitle className="text-xs lg:text-sm font-medium text-muted-foreground">
               Total de Pedidos
             </CardTitle>
-            <ShoppingCart className="w-5 h-5 text-primary" />
+            <ShoppingCart className="w-4 h-4 lg:w-5 lg:h-5 text-primary" />
           </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-primary">{totalOrders}</div>
-            <p className="text-xs text-muted-foreground mt-1">
+          <CardContent className="p-3 lg:p-6 pt-0">
+            <div className="text-2xl lg:text-3xl font-bold text-primary">{totalOrders}</div>
+            <p className="text-xs text-muted-foreground mt-1 hidden sm:block">
               Pedidos cadastrados
             </p>
           </CardContent>
         </Card>
 
         <Card className="border-border/50 shadow-elegant hover:shadow-gold transition-all duration-300">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 p-3 lg:p-6">
+            <CardTitle className="text-xs lg:text-sm font-medium text-muted-foreground">
               Produtos
             </CardTitle>
-            <Package className="w-5 h-5 text-secondary" />
+            <Package className="w-4 h-4 lg:w-5 lg:h-5 text-secondary" />
           </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-secondary">{totalProducts}</div>
-            <p className="text-xs text-muted-foreground mt-1">
+          <CardContent className="p-3 lg:p-6 pt-0">
+            <div className="text-2xl lg:text-3xl font-bold text-secondary">{totalProducts}</div>
+            <p className="text-xs text-muted-foreground mt-1 hidden sm:block">
               Produtos disponíveis
             </p>
           </CardContent>
         </Card>
 
         <Card className="border-border/50 shadow-elegant hover:shadow-gold transition-all duration-300">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 p-3 lg:p-6">
+            <CardTitle className="text-xs lg:text-sm font-medium text-muted-foreground">
               Clientes
             </CardTitle>
-            <Users className="w-5 h-5 text-accent" />
+            <Users className="w-4 h-4 lg:w-5 lg:h-5 text-accent" />
           </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-accent">{totalCustomers}</div>
-            <p className="text-xs text-muted-foreground mt-1">
+          <CardContent className="p-3 lg:p-6 pt-0">
+            <div className="text-2xl lg:text-3xl font-bold text-accent">{totalCustomers}</div>
+            <p className="text-xs text-muted-foreground mt-1 hidden sm:block">
               Clientes cadastrados
             </p>
           </CardContent>
         </Card>
 
         <Card className="border-border/50 shadow-elegant hover:shadow-gold transition-all duration-300">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 p-3 lg:p-6">
+            <CardTitle className="text-xs lg:text-sm font-medium text-muted-foreground">
               Receita Total
             </CardTitle>
-            <TrendingUp className="w-5 h-5 text-primary" />
+            <TrendingUp className="w-4 h-4 lg:w-5 lg:h-5 text-primary" />
           </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-primary">
+          <CardContent className="p-3 lg:p-6 pt-0">
+            <div className="text-xl lg:text-3xl font-bold text-primary">
               R$ {totalRevenue.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
             </div>
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className="text-xs text-muted-foreground mt-1 hidden sm:block">
               Valor total dos pedidos
             </p>
           </CardContent>

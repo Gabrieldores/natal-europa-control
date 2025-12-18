@@ -111,17 +111,17 @@ const Customers = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-foreground">Clientes</h1>
+    <div className="space-y-4 lg:space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <h1 className="text-2xl lg:text-3xl font-bold text-foreground">Clientes</h1>
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
           <DialogTrigger asChild>
-            <Button onClick={() => resetForm()}>
+            <Button onClick={() => resetForm()} className="w-full sm:w-auto">
               <Plus className="mr-2 h-4 w-4" />
               Novo Cliente
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="max-w-[95vw] sm:max-w-md">
             <DialogHeader>
               <DialogTitle>
                 {editingCustomer ? "Editar Cliente" : "Novo Cliente"}
@@ -169,47 +169,92 @@ const Customers = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle>Lista de Clientes</CardTitle>
+          <CardTitle className="text-lg lg:text-xl">Lista de Clientes</CardTitle>
         </CardHeader>
         <CardContent>
           {isLoading ? (
             <p className="text-muted-foreground">Carregando...</p>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Nome</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Telefone</TableHead>
-                  <TableHead className="text-right">Ações</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
+            <>
+              {/* Desktop Table */}
+              <div className="hidden md:block overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Nome</TableHead>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Telefone</TableHead>
+                      <TableHead className="text-right">Ações</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {customers?.map((customer) => (
+                      <TableRow key={customer.id}>
+                        <TableCell className="font-medium">{customer.name}</TableCell>
+                        <TableCell>{customer.email || "-"}</TableCell>
+                        <TableCell>{customer.phone || "-"}</TableCell>
+                        <TableCell className="text-right">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleEdit(customer)}
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => deleteMutation.mutate(customer.id)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+
+              {/* Mobile Cards */}
+              <div className="md:hidden space-y-3">
                 {customers?.map((customer) => (
-                  <TableRow key={customer.id}>
-                    <TableCell className="font-medium">{customer.name}</TableCell>
-                    <TableCell>{customer.email || "-"}</TableCell>
-                    <TableCell>{customer.phone || "-"}</TableCell>
-                    <TableCell className="text-right">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleEdit(customer)}
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => deleteMutation.mutate(customer.id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </TableCell>
-                  </TableRow>
+                  <div key={customer.id} className="p-4 bg-muted rounded-lg space-y-2">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <p className="font-medium">{customer.name}</p>
+                        {customer.email && (
+                          <p className="text-sm text-muted-foreground">{customer.email}</p>
+                        )}
+                        {customer.phone && (
+                          <p className="text-sm text-muted-foreground">{customer.phone}</p>
+                        )}
+                      </div>
+                      <div className="flex gap-1">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleEdit(customer)}
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => deleteMutation.mutate(customer.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
                 ))}
-              </TableBody>
-            </Table>
+                {(!customers || customers.length === 0) && (
+                  <p className="text-muted-foreground text-center py-8">
+                    Nenhum cliente cadastrado
+                  </p>
+                )}
+              </div>
+            </>
           )}
         </CardContent>
       </Card>

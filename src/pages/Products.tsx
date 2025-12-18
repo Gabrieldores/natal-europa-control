@@ -142,20 +142,20 @@ const Products = () => {
   };
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500">
-      <div className="flex justify-between items-center">
+    <div className="space-y-4 lg:space-y-6 animate-in fade-in duration-500">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Produtos</h1>
-          <p className="text-muted-foreground mt-1">Gerencie o catálogo de produtos</p>
+          <h1 className="text-2xl lg:text-3xl font-bold text-foreground">Produtos</h1>
+          <p className="text-muted-foreground mt-1 text-sm lg:text-base">Gerencie o catálogo de produtos</p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-gradient-primary hover:opacity-90 shadow-elegant">
+            <Button className="bg-gradient-primary hover:opacity-90 shadow-elegant w-full sm:w-auto">
               <Plus className="w-4 h-4 mr-2" />
               Novo Produto
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="max-w-[95vw] sm:max-w-md">
             <DialogHeader>
               <DialogTitle>
                 {editingProduct ? "Editar Produto" : "Novo Produto"}

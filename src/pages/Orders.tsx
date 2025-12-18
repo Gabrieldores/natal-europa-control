@@ -176,20 +176,20 @@ const Orders = () => {
   };
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500">
-      <div className="flex justify-between items-center">
+    <div className="space-y-4 lg:space-y-6 animate-in fade-in duration-500">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold">Pedidos</h1>
-          <p className="text-muted-foreground mt-1">Gerencie os pedidos de Natal</p>
+          <h1 className="text-2xl lg:text-3xl font-bold">Pedidos</h1>
+          <p className="text-muted-foreground mt-1 text-sm lg:text-base">Gerencie os pedidos de Natal</p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-gradient-primary hover:opacity-90 shadow-elegant">
+            <Button className="bg-gradient-primary hover:opacity-90 shadow-elegant w-full sm:w-auto">
               <Plus className="w-4 h-4 mr-2" />
               Novo Pedido
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="max-w-[95vw] sm:max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Novo Pedido</DialogTitle>
               <DialogDescription>Cadastre um novo pedido de Natal</DialogDescription>
@@ -214,14 +214,14 @@ const Orders = () => {
                 </Button>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <Label>Data do Pedido</Label>
                   <Popover>
                     <PopoverTrigger asChild>
-                      <Button variant="outline" className={cn("w-full justify-start text-left font-normal")}>
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {orderDate ? format(orderDate, "PPP", { locale: ptBR }) : "Selecione"}
+                      <Button variant="outline" className={cn("w-full justify-start text-left font-normal text-sm")}>
+                        <CalendarIcon className="mr-2 h-4 w-4 flex-shrink-0" />
+                        <span className="truncate">{orderDate ? format(orderDate, "dd/MM/yyyy", { locale: ptBR }) : "Selecione"}</span>
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="start">
@@ -233,9 +233,9 @@ const Orders = () => {
                   <Label>Data de Retirada *</Label>
                   <Popover>
                     <PopoverTrigger asChild>
-                      <Button variant="outline" className={cn("w-full justify-start text-left font-normal")}>
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {pickupDate ? format(pickupDate, "PPP", { locale: ptBR }) : "Selecione"}
+                      <Button variant="outline" className={cn("w-full justify-start text-left font-normal text-sm")}>
+                        <CalendarIcon className="mr-2 h-4 w-4 flex-shrink-0" />
+                        <span className="truncate">{pickupDate ? format(pickupDate, "dd/MM/yyyy", { locale: ptBR }) : "Selecione"}</span>
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="start">
