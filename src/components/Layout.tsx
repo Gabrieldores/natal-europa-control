@@ -1,9 +1,12 @@
 import { Link, useLocation } from "react-router-dom";
-import { Home, Package, Users, ShoppingCart, FileText } from "lucide-react";
+import { Home, Package, Users, ShoppingCart, FileText, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/contexts/AuthContext";
+import { Button } from "@/components/ui/button";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
+  const { user, signOut } = useAuth();
 
   const navItems = [
     { path: "/", icon: Home, label: "Dashboard" },
@@ -27,9 +30,25 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                 Sistema de Pedidos de Natal
               </p>
             </div>
-            <div className="hidden md:flex items-center gap-2 px-4 py-2 bg-accent/20 rounded-lg border border-accent/30">
-              <div className="w-2 h-2 bg-accent rounded-full animate-pulse" />
-              <span className="text-primary-foreground text-sm font-medium">Temporada Natalina 2025</span>
+            <div className="hidden md:flex items-center gap-4">
+              <div className="flex items-center gap-2 px-4 py-2 bg-accent/20 rounded-lg border border-accent/30">
+                <div className="w-2 h-2 bg-accent rounded-full animate-pulse" />
+                <span className="text-primary-foreground text-sm font-medium">Temporada Natalina 2025</span>
+              </div>
+              {user && (
+                <div className="flex items-center gap-3">
+                  <span className="text-primary-foreground/80 text-sm">{user.email}</span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={signOut}
+                    className="text-primary-foreground hover:bg-white/10"
+                  >
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Sair
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         </div>
