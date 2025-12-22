@@ -7,8 +7,10 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Package, ShoppingCart, Users, TrendingUp } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
 
   const { data: orders } = useQuery({
@@ -64,7 +66,10 @@ const Dashboard = () => {
     <div className="space-y-4 lg:space-y-8 animate-in fade-in duration-500">
       {/* Stats Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-6">
-        <Card className="border-border/50 shadow-elegant hover:shadow-gold transition-all duration-300">
+        <Card 
+          className="border-border/50 shadow-elegant hover:shadow-gold transition-all duration-300 cursor-pointer"
+          onClick={() => navigate("/orders")}
+        >
           <CardHeader className="flex flex-row items-center justify-between pb-2 p-3 lg:p-6">
             <CardTitle className="text-xs lg:text-sm font-medium text-muted-foreground">
               Total de Pedidos
@@ -79,7 +84,10 @@ const Dashboard = () => {
           </CardContent>
         </Card>
 
-        <Card className="border-border/50 shadow-elegant hover:shadow-gold transition-all duration-300">
+        <Card 
+          className="border-border/50 shadow-elegant hover:shadow-gold transition-all duration-300 cursor-pointer"
+          onClick={() => navigate("/products")}
+        >
           <CardHeader className="flex flex-row items-center justify-between pb-2 p-3 lg:p-6">
             <CardTitle className="text-xs lg:text-sm font-medium text-muted-foreground">
               Produtos
@@ -94,7 +102,10 @@ const Dashboard = () => {
           </CardContent>
         </Card>
 
-        <Card className="border-border/50 shadow-elegant hover:shadow-gold transition-all duration-300">
+        <Card 
+          className="border-border/50 shadow-elegant hover:shadow-gold transition-all duration-300 cursor-pointer"
+          onClick={() => navigate("/customers")}
+        >
           <CardHeader className="flex flex-row items-center justify-between pb-2 p-3 lg:p-6">
             <CardTitle className="text-xs lg:text-sm font-medium text-muted-foreground">
               Clientes
