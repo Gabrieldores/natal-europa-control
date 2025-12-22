@@ -7,7 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Pencil, Trash2, X } from "lucide-react";
+import { Plus, Pencil, Trash2, X, Printer } from "lucide-react";
+import { printThermalOrder } from "@/utils/thermalPrint";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
@@ -351,8 +352,11 @@ const Orders = () => {
                     Pedido: {format(new Date(order.order_date), "dd/MM/yyyy")} • Retirada: {format(new Date(order.pickup_date), "dd/MM/yyyy")}
                   </CardDescription>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 items-center">
                   <Badge>{order.status === "pending" ? "Pendente" : order.status === "confirmed" ? "Confirmado" : order.status === "ready" ? "Pronto" : "Concluído"}</Badge>
+                  <Button variant="ghost" size="icon" onClick={() => printThermalOrder(order as any)} title="Imprimir">
+                    <Printer className="w-4 h-4" />
+                  </Button>
                   <Button variant="ghost" size="icon" onClick={() => deleteOrderMutation.mutate(order.id)}>
                     <Trash2 className="w-4 h-4 text-destructive" />
                   </Button>
