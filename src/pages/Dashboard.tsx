@@ -3,11 +3,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { format } from "date-fns";
+import { format, subDays, eachDayOfInterval } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Package, ShoppingCart, Users, TrendingUp } from "lucide-react";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -54,6 +56,39 @@ const Dashboard = () => {
   const totalProducts = products?.length || 0;
   const totalCustomers = customers?.length || 0;
   const totalRevenue = orders?.reduce((sum, order) => sum + (Number(order.total_amount) || 0), 0) || 0;
+
+  // Chart data - orders per day for last 7 days
+  const chartData = useMemo(() => {
+    const last7Days = eachDayOfInterval({
+      start: subDays(new Date(), 6),
+      end: new Date(),
+    });
+
+    return last7Days.map((day) => {
+      const dayStr = format(day, "yyyy-MM-dd");
+      const dayOrders = orders?.filter((order) => order.order_date === dayStr) || [];
+      
+      const pending = dayOrders.filter((o) => o.status === "pending").length;
+      const confirmed = dayOrders.filter((o) => o.status === "confirmed" || o.status === "ready" || o.status === "completed").length;
+
+      return {
+        date: format(day, "dd/MM", { locale: ptBR }),
+        pendentes: pending,
+        confirmados: confirmed,
+      };
+    });
+  }, [orders]);
+
+  const chartConfig = {
+    pendentes: {
+      label: "Pendentes",
+      color: "hsl(var(--secondary))",
+    },
+    confirmados: {
+      label: "Confirmados",
+      color: "hsl(var(--primary))",
+    },
+  };
 
   const upcomingPickups = orders
     ?.filter(order => new Date(order.pickup_date) >= new Date())
@@ -137,6 +172,49 @@ const Dashboard = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Orders Chart */}
+      <Card className="border-border/50 shadow-elegant">
+        <CardHeader>
+          <CardTitle className="text-xl">Pedidos por Dia</CardTitle>
+          <CardDescription>Últimos 7 dias - divididos por status</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ChartContainer config={chartConfig} className="h-[250px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={chartData}>
+                <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                <XAxis 
+                  dataKey="date" 
+                  tick={{ fontSize: 12 }} 
+                  tickLine={false}
+                  axisLine={false}
+                />
+                <YAxis 
+                  tick={{ fontSize: 12 }} 
+                  tickLine={false}
+                  axisLine={false}
+                  allowDecimals={false}
+                />
+                <Tooltip content={<ChartTooltipContent />} />
+                <Legend />
+                <Bar 
+                  dataKey="pendentes" 
+                  name="Pendentes" 
+                  fill="hsl(var(--secondary))" 
+                  radius={[4, 4, 0, 0]} 
+                />
+                <Bar 
+                  dataKey="confirmados" 
+                  name="Confirmados" 
+                  fill="hsl(var(--primary))" 
+                  radius={[4, 4, 0, 0]} 
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </ChartContainer>
+        </CardContent>
+      </Card>
 
       {/* Calendar and Pickups */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
